@@ -1,0 +1,46 @@
+name: actions-lint
+
+# Shared lint for GitHub Actions workflow/action files, so every repo that
+# calls this checks against the same tool versions instead of each one
+# drifting independently. Pinned to match release-please-forecast's own
+# .pre-commit-config.yaml, the pattern this was lifted from.
+on:
+  workflow_call: {}
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Type-checks `${{ }}` expressions, rejects unknown contexts, and runs
+      # shellcheck over every `run:` block. This only ever sees the calling
+      # repo's own files — it can't (and doesn't) validate a `with:` block
+      # against a reusable workflow defined in another repo, which is the
+      # gap tracked in non7top/gh-workflows#2.
+      - name: actionlint
+        run: docker run --rm -v "$PWD":/repo -w /repo rhysd/actionlint:1.7.12 -color
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - run: pip install check-jsonschema
+
+      # Validates every workflow file against SchemaStore's schema. A
+      # misspelled input name or a key at the wrong nesting level is
+      # silently ignored by the Actions runner rather than reported, which
+      # makes it exactly the sort of mistake worth catching mechanically.
+      - name: check-jsonschema (workflows)
+        run: check-jsonschema --builtin-schema github-workflows .github/workflows/*.yml
+
+      # Only a repo that publishes its own composite/reusable action has an
+      # action.yml for this schema to check.
+      - name: check-jsonschema (action.yml)
+        run: |
+          if [ -f action.yml ]; then
+            check-jsonschema --builtin-schema github-actions action.yml
+          fi
