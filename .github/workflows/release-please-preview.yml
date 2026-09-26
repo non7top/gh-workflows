@@ -1,7 +1,21 @@
 name: release-please-preview
 
 on:
-  workflow_call: {}
+  workflow_call:
+    inputs:
+      package-name:
+        description: >-
+          Passed straight through to release-please-forecast's own
+          package-name input. Leave unset for a repo whose
+          .release-please-manifest.json is keyed by ".". Required for a
+          repo split into per-directory packages (release-please's
+          cargo-workspace/linked-versions plugins, say) unless every
+          package in the manifest is kept at the same version by a
+          linked-versions group with merge: true, in which case
+          release-please-forecast's own first-key fallback covers it —
+          see that action's README.
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -25,3 +39,4 @@ jobs:
       - uses: non7top/release-please-forecast@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          package-name: ${{ inputs.package-name }}
