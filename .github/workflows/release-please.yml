@@ -21,14 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # release-please-config.json's extra-label handles applying RELEASE
-      # to the generated PR natively — just make sure it exists before the
+      # to the generated PR natively - just make sure it exists before the
       # action runs, since the action won't create it itself. Red here is
       # only a safe default for the label's very first creation; the
       # "Color the RELEASE label by bump type" step below recolors it to
       # match the actual predicted bump on every run.
       #
       # extra-label (additive) is deliberate over label (release-please's
-      # own identifying label for its managed PR — replacing it risks
+      # own identifying label for its managed PR - replacing it risks
       # breaking its ability to find/update that PR later) or release-label
       # (applied post-merge/tag, not while the PR is still open).
       #
@@ -43,14 +43,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh label create RELEASE --color FF0000 --force --repo "${{ github.repository }}"
 
-      - uses: googleapis/release-please-action@v5
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
         with:
           config-file: ${{ inputs.config-file }}
           manifest-file: ${{ inputs.manifest-file }}
 
       # The action's own major/minor/patch outputs only populate once a
-      # release is actually tagged (i.e. after this generated PR merges) —
+      # release is actually tagged (i.e. after this generated PR merges) -
       # while it's still open/updating, all we get is `pr`, the
       # PullRequest object as JSON. Its body embeds both the old and new
       # version in the changelog heading's compare link
