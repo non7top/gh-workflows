@@ -17,3 +17,5 @@ permissions:
 jobs:
   lint:
     uses: ./.github/workflows/actions-lint.yml
+    with:
+      require-pinned-actions: true

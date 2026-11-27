@@ -12,7 +12,7 @@ on:
           cargo-workspace/linked-versions plugins, say) unless every
           package in the manifest is kept at the same version by a
           linked-versions group with merge: true, in which case
-          release-please-forecast's own first-key fallback covers it —
+          release-please-forecast's own first-key fallback covers it -
           see that action's README.
         type: string
         default: ''
@@ -25,18 +25,18 @@ jobs:
   preview:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Full history and tags: release-please needs to walk back to the
           # last release tag, and the action builds its own merge commit on
           # top of this clone.
           fetch-depth: 0
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
 
-      - uses: non7top/release-please-forecast@v1
+      - uses: non7top/release-please-forecast@44fd4e55179855b4182292cf96fe7c6ce5bfe227 # v1.7.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           package-name: ${{ inputs.package-name }}
